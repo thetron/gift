@@ -7,6 +7,8 @@ begin
     gemspec.email = "nicholas@bruning.com.au"
     gemspec.homepage = "http://github.com/thetron/gift"
     gemspec.authors = ["Nicholas Bruning"]
+    
+    gemspec.executables = ['gift']
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
