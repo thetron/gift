@@ -1,0 +1,26 @@
+h1. Gift - Git and FTP, the easy way
+
+We recently adopted Ruby on Rails as our primary web application framework of choice. The marriage of Rails, Git and Heroku made for a carefree development, deployment and management strategy. Unfortunately, the reality is that we're not always able to use our favourite technologie; often a client will have existing hosting arrangements that simply cannot (easily) support a Rails setup, or maybe we're just doing a simple Wordpress blog. Regardless - we wanted to have that same ease of deployment; a way to keep everything in the system to which we have become accustomed.
+
+So we made Gift.
+
+
+h2. Usage
+
+Install the gem:
+
+<pre>
+	gem install gift
+</pre>
+
+Initialise your FTP server:
+
+<pre>
+	gift wrap ftp://username:password@127.0.0.1:21
+</pre>
+
+Push your commits:
+
+<pre>
+	gift deliver
+</pre>
