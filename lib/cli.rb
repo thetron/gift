@@ -36,6 +36,7 @@ require 'ostruct'
 require 'date'
 require 'uri'
 require 'net/ftp'
+require 'yaml'
 
 module Gift
   class Cli
@@ -75,16 +76,39 @@ module Gift
       
       #check a local git repository exists
       @errors = fail(["No local git repository found"]) unless File.exists?(".git")
-            
-      #test remote login
-      uri = URI.parse(@options.server_address)
-      username = uri.userinfo.split(":")[0]
-      password = uri.userinfo.split(":")[1]
       
-      ftp = Net::FTP.new(uri.host, username, password)
-      ftp.close
-      #create .gift/remotes.yml locally if not exists
-      #create .gift/deliveries/ remotely if not exists
+      uri = URI.parse(@options.server_address)
+      recipient = Recipient.new
+      
+      recipient.id = @options.server_name
+      recipient.username = uri.userinfo.split(":")[0]
+      recipient.password = uri.userinfo.split(":")[1]
+      recipient.host = uri.host
+      recipient.port = uri.port
+      recipient.path = uri.path    
+      
+      begin
+        ftp = Net::FTP.new(uri.host, username, password)
+        puts "Connected to #{recipient.host}"
+        ftp.chdir(uri.path)
+        
+         #create .gift/deliveries/ remotely if not exists
+        puts "Initialising remote files in #{recipient.host}/#{recipient.path}"
+        ftp.mkdir('.gift')
+        ftp.chdir('.gift')
+        ftp.mkdir('deliveries')
+        puts "Remote setup complete"
+        ftp.close
+        
+        #create .gift/remotes.yml locally if not exists
+        File.makedirs '.gift'
+        
+        
+       
+      rescue Exception => e
+        fail(["#{e} #{e.class}"])
+      end
+      
       
       #populate or refresh .gift/remotes.yml locally
     end
@@ -182,6 +206,10 @@ module Gift
         exit 0
       end
     end
+  end
+  
+  class Recipient
+    attr_accessor :id, :username, :password, :host, :port, :path
   end
 end
 
