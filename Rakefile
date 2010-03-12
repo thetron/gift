@@ -8,7 +8,7 @@ begin
     gemspec.homepage = "http://github.com/thetron/gift"
     gemspec.authors = ["Nicholas Bruning"]
   end
-  Jeweler::GemcutterTasks
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
 end

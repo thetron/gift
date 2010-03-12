@@ -16,8 +16,12 @@ Gem::Specification.new do |s|
     "README.textile"
   ]
   s.files = [
-    "README.textile",
-     "VERSION"
+    ".gitignore",
+     "README.textile",
+     "Rakefile",
+     "VERSION",
+     "gift.gemspec",
+     "pkg/gift-0.0.0.gem"
   ]
   s.homepage = %q{http://github.com/thetron/gift}
   s.rdoc_options = ["--charset=UTF-8"]
