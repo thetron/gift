@@ -27,6 +27,17 @@ module Gift
       File.makedirs '.gift'
     end
     
+    def something_about_diffing
+      repo = Git.open('./')
+      repo.diff(last_remote_commit, repo.log.to_a.first.sha).each do |file|
+        if file.type == "deleted"
+          delete_remote_file(file.path)
+        else
+          upload_file(file.path)
+        end
+      end
+    end
+    
     def save
       unless self.id
         self.id = "ftp-1"
@@ -54,6 +65,16 @@ module Gift
     
     def self.all
       YAML::load_file('.gift/recipients.yml')
+    end
+    
+    protected
+    
+    def upload_file(filename)
+      
+    end
+    
+    def delete_remote_file(filename)
+      
     end
   end
 end
