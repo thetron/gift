@@ -40,6 +40,7 @@ require 'date'
 require 'uri'
 require 'net/ftp'
 require 'yaml'
+require 'lib/recipient'
 
 module Gift
   class Cli
@@ -81,7 +82,7 @@ module Gift
       @errors = fail(["No local git repository found"]) unless File.exists?(".git")
       
       uri = URI.parse(@options.server_address)
-      recipient = Recipient.new
+      recipient = Gift::Recipient.new
       
       recipient.id = @options.server_name
       recipient.username = uri.userinfo.split(":")[0]
@@ -94,11 +95,12 @@ module Gift
         puts "Connected to #{recipient.host}" if recipient.valid_connection?
         
         puts "Initialising remote files in #{recipient.host}/#{recipient.path}"
-        recipient.setup_remote_dirs
+        #recipient.setup_remote_dirs
         puts "Remote setup complete"
         
         puts "Initialising local files"
         recipient.setup_local_dirs
+        recipient.save
         puts "Local setup complete"
       rescue Exception => e
         fail(["#{e} #{e.class}"])

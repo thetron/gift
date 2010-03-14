@@ -1,0 +1,7 @@
+--- !ruby/object:Gift::Recipient 
+host: involved.com.au
+id: 
+password: d8u2gy
+path: gift-test
+port: 21
+username: dev+involved.com.au

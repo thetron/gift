@@ -1,3 +1,5 @@
+require 'ftools'
+
 module Gift
   class Recipient
     attr_accessor :id, :username, :password, :host, :port, :path
@@ -6,7 +8,7 @@ module Gift
       
     end
     
-    def connection_valid?
+    def valid_connection?
       begin
         connect
         disconnect
@@ -28,6 +30,13 @@ module Gift
       File.makedirs '.gift'
     end
     
+    def save
+      yaml = YAML::dump(self)
+      fp = open('.gift/recipients.yml', 'w')
+      fp.write(yaml)
+      fp.close
+    end
+    
     def connect
       @connection = Net::FTP.new(uri.host, username, password)
       @connection.chdir(uri.path)
@@ -35,6 +44,15 @@ module Gift
     
     def disconnect
       @connection.close
+    end
+    
+    def self.find_by_id(id)
+      #search recipients.yml for id
+      
+    end
+    
+    def self.all
+      
     end
   end
 end
