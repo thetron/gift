@@ -30,6 +30,9 @@
 #   Copyright (c) 2010 Nicholas Bruning. Licensed under the MIT License:
 #   http://www.opensource.org/licenses/mit-license.php
 
+# use this for testing:
+# ruby lib/cli.rb wrap ftp://dev+involved.com.au:d8u2gy@involved.com.au:21/gift-test
+
 require 'optparse' 
 require 'rdoc/usage'
 require 'ostruct'
@@ -88,29 +91,21 @@ module Gift
       recipient.path = uri.path    
       
       begin
-        ftp = Net::FTP.new(uri.host, username, password)
-        puts "Connected to #{recipient.host}"
-        ftp.chdir(uri.path)
+        puts "Connected to #{recipient.host}" if recipient.valid_connection?
         
-         #create .gift/deliveries/ remotely if not exists
         puts "Initialising remote files in #{recipient.host}/#{recipient.path}"
-        ftp.mkdir('.gift')
-        ftp.chdir('.gift')
-        ftp.mkdir('deliveries')
+        recipient.setup_remote_dirs
         puts "Remote setup complete"
-        ftp.close
         
-        #create .gift/remotes.yml locally if not exists
-        File.makedirs '.gift'
-        
-        
-       
+        puts "Initialising local files"
+        recipient.setup_local_dirs
+        puts "Local setup complete"
       rescue Exception => e
         fail(["#{e} #{e.class}"])
       end
       
-      
       #populate or refresh .gift/remotes.yml locally
+      
     end
     
     def unwrap
@@ -206,10 +201,6 @@ module Gift
         exit 0
       end
     end
-  end
-  
-  class Recipient
-    attr_accessor :id, :username, :password, :host, :port, :path
   end
 end
 
