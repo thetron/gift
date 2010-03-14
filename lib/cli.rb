@@ -118,11 +118,7 @@ module Gift
     def deliver
       recipient = Recipient.find_by_id(nil)
       puts "Delivering gift to '#{recipient.id}'"
-      
-      #grab most recent commit from server
-      
-      #determine diffs between current master commit and last remote commit
-      #upload or remove those files as appropriate w. progress bars
+      recipient.update_remote
     end
     
     def output_version

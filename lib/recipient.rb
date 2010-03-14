@@ -55,6 +55,10 @@ module Gift
         sha = f
       end
       disconnect
+      
+      #need to set to first commit if sha = ""
+      
+      sha
     end
     
     def save_last_commit(sha)
