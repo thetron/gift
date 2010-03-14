@@ -25,17 +25,48 @@ module Gift
     
     def setup_local_dirs
       File.makedirs '.gift'
+      File.makedirs'.gift/deliveries'
     end
     
-    def something_about_diffing
+    def update_remote
+      remote_commit = last_remote_commit
+      
+      connect
       repo = Git.open('./')
-      repo.diff(last_remote_commit, repo.log.to_a.first.sha).each do |file|
+      repo.diff(remote_commit, repo.log.to_a.first.sha).each do |file|
         if file.type == "deleted"
+          "Deleting #{file.path} [          ] 0%"
           delete_remote_file(file.path)
         else
+          puts "Uploading #{file.path} [          ] 0%"
           upload_file(file.path)
         end
       end
+      disconnect
+      
+      save_commit(repo.log.to_a.first.sha)
+    end
+    
+    def last_remote_commit
+      sha = ""
+      connect
+      @connection.chdir('.gift/deliveries')
+      @connection.gettextfile(@connection.ls.last) do |f|
+        sha = f
+      end
+      disconnect
+    end
+    
+    def save_last_commit(sha)
+      file_name = ".gift/deliveries/#{id}/#{Time.now.to_i.to_s}"
+      fp = File.open(file_name, "w")
+      fp.puts sha
+      fp.close
+      
+      connect
+      @connection.chdir('.gift/deliveries')
+      @connection.puttextfile(file_name)
+      disconnect
     end
     
     def save
