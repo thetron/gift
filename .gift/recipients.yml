@@ -1,6 +1,6 @@
 --- !ruby/object:Gift::Recipient 
 host: involved.com.au
-id: 
+id: ftp-1
 password: d8u2gy
 path: gift-test
 port: 21

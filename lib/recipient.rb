@@ -1,12 +1,9 @@
 require 'ftools'
+require 'yaml'
 
 module Gift
   class Recipient
     attr_accessor :id, :username, :password, :host, :port, :path
-    
-    def create_remote_folder
-      
-    end
     
     def valid_connection?
       begin
@@ -31,6 +28,10 @@ module Gift
     end
     
     def save
+      unless self.id
+        self.id = "ftp-1"
+      end
+      
       yaml = YAML::dump(self)
       fp = open('.gift/recipients.yml', 'w')
       fp.write(yaml)
@@ -48,11 +49,11 @@ module Gift
     
     def self.find_by_id(id)
       #search recipients.yml for id
-      
+      YAML::load_file('.gift/recipients.yml')
     end
     
     def self.all
-      
+      YAML::load_file('.gift/recipients.yml')
     end
   end
 end

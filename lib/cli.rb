@@ -116,7 +116,8 @@ module Gift
     end
         
     def deliver
-      puts "Delivering gift to 'ftp-server-1'"
+      recipient = Recipient.find_by_id(nil)
+      puts "Delivering gift to '#{recipient.id}'"
       
       #grab most recent commit from server
       
@@ -125,7 +126,7 @@ module Gift
     end
     
     def output_version
-      puts "Gift vX.X.X"
+      puts "Gift v0.0.1"
     end
     
     def output_help
