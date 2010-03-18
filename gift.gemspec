@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
      "README.textile",
      "Rakefile",
      "VERSION",
-     "bin/gift.rb",
+     "bin/gift",
      "gift.gemspec",
      "lib/cli.rb",
      "lib/recipient.rb"
