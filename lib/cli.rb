@@ -34,10 +34,11 @@ module Gift
         process_command
         
         puts "\nFinished at #{DateTime.now}" if @options.verbose
-
       else
         output_usage
       end
+      
+      return 0
     end
     
     protected
