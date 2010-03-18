@@ -9,7 +9,6 @@ begin
     gemspec.authors = ["Nicholas Bruning"]
     gemspec.add_dependency('ptools')
     gemspec.add_dependency('git')
-    gemspec.executables = "gift"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
