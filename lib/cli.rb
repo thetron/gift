@@ -91,7 +91,9 @@ module Gift
     end
     
     def output_version
-      puts "Gift v0.0.1"
+      File.open(File.join(File.dirname(__FILE__), '..', 'VERSION'), "r") do |f|
+        f.each { |f| puts "Gift v#{f}" }
+      end
     end
     
     def output_help
