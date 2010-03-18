@@ -10,8 +10,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicholas Bruning"]
   s.date = %q{2010-03-18}
+  s.default_executable = %q{gift}
   s.description = %q{Gift provides a simple interface for pushing your site to a server that does not support git, via FTP.}
   s.email = %q{nicholas@bruning.com.au}
+  s.executables = ["gift"]
   s.extra_rdoc_files = [
     "README.textile"
   ]
@@ -36,15 +38,15 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<ptools>, [">= 0"])
-      s.add_runtime_dependency(%q<git>, [">= 0"])
+      s.add_runtime_dependency(%q<ptools>, [">= 1.1.8"])
+      s.add_runtime_dependency(%q<git>, [">= 1.2.5"])
     else
-      s.add_dependency(%q<ptools>, [">= 0"])
-      s.add_dependency(%q<git>, [">= 0"])
+      s.add_dependency(%q<ptools>, [">= 1.1.8"])
+      s.add_dependency(%q<git>, [">= 1.2.5"])
     end
   else
-    s.add_dependency(%q<ptools>, [">= 0"])
-    s.add_dependency(%q<git>, [">= 0"])
+    s.add_dependency(%q<ptools>, [">= 1.1.8"])
+    s.add_dependency(%q<git>, [">= 1.2.5"])
   end
 end
 
