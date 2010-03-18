@@ -1,4 +1,26 @@
 --- !ruby/object:Gift::Recipient 
+connection: !ruby/object:Net::FTP 
+  binary: true
+  debug_mode: false
+  last_response: |
+    226-Options: -a 
+    226 3 matches total
+
+  last_response_code: "226"
+  mon_count: 0
+  mon_entering_queue: []
+
+  mon_owner: 
+  mon_waiting_queue: []
+
+  passive: false
+  resume: false
+  sock: !ruby/object:TCPSocket {}
+
+  welcome: |
+    230-User dev+involved.com.au has group access to:  involved  
+    230 OK. Current restricted directory is /
+
 host: involved.com.au
 id: ftp-1
 password: d8u2gy

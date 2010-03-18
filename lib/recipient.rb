@@ -1,5 +1,7 @@
 require 'ftools'
 require 'yaml'
+require 'ptools'
+require 'git'
 
 module Gift
   class Recipient
@@ -17,51 +19,80 @@ module Gift
     
     def setup_remote_dirs
       connect
-      ftp.mkdir('.gift')
-      ftp.chdir('.gift')
-      ftp.mkdir('deliveries')
+      unless @connection.nlst.include?('.gift')
+        @connection.mkdir('.gift')
+      else
+        puts 'Remote gift directory already exists'
+      end
+      
+      @connection.chdir('.gift')
+      
+      unless @connection.nlst.include?('deliveries')
+        @connection.mkdir('deliveries')
+      else
+        puts 'Remote deliveries directory already exists'
+      end
       disconnect
     end
     
     def setup_local_dirs
-      File.makedirs '.gift'
-      File.makedirs'.gift/deliveries'
+      File.makedirs '.gift' unless File.exists?('.gift')
+      File.makedirs '.gift/deliveries' unless File.exists?('.gift/deliveries')
+      File.makedirs ".gift/deliveries/#{self.id}"# unless File.exists?(".gift/deliveries/#{self.id}")
     end
     
     def update_remote
+      repo = Git.open('./')
+      
       remote_commit = last_remote_commit
+      remote_commit = repo.log.to_a.last.sha if remote_commit == ""
+            
+      file_count = 0  
+      
+      puts("Last remote commit: #{remote_commit} | Current local commit: #{repo.log.to_a.first.sha}")
       
       connect
-      repo = Git.open('./')
       repo.diff(remote_commit, repo.log.to_a.first.sha).each do |file|
-        if file.type == "deleted"
-          "Deleting #{file.path} [          ] 0%"
-          delete_remote_file(file.path)
-        else
-          puts "Uploading #{file.path} [          ] 0%"
-          upload_file(file.path)
+        unless(file.path.split('/').first == ".gift")
+          if file.type == "deleted"
+            begin
+              size = @connection.size(file.path)
+              puts "Deleting #{file.path} [          ] 0%"
+              delete_remote_file(file.path)
+            rescue Exception => e
+              puts "Delete skipped #{file.path} (file not found)"
+            end
+          else
+            puts "Uploading #{file.path} [          ] 0%"
+            upload_file(file.path)
+          end
         end
+        file_count += 1
       end
       disconnect
       
-      save_commit(repo.log.to_a.first.sha)
+      if file_count == 0
+        puts "Everything up to date!"
+      else
+        save_commit(repo.log.to_a.first.sha)
+      end
     end
     
     def last_remote_commit
       sha = ""
       connect
       @connection.chdir('.gift/deliveries')
-      @connection.gettextfile(@connection.ls.last) do |f|
-        sha = f
+      if @connection.nlst.length > 2
+        @connection.gettextfile(@connection.nlst.last) do |f|
+          sha = f
+        end
       end
       disconnect
-      
-      #need to set to first commit if sha = ""
       
       sha
     end
     
-    def save_last_commit(sha)
+    def save_commit(sha)
       file_name = ".gift/deliveries/#{id}/#{Time.now.to_i.to_s}"
       fp = File.open(file_name, "w")
       fp.puts sha
@@ -71,6 +102,8 @@ module Gift
       @connection.chdir('.gift/deliveries')
       @connection.puttextfile(file_name)
       disconnect
+      
+      puts "Remote state saved"
     end
     
     def save
@@ -85,8 +118,8 @@ module Gift
     end
     
     def connect
-      @connection = Net::FTP.new(uri.host, username, password)
-      @connection.chdir(uri.path)
+      @connection = Net::FTP.new(host, username, password)
+      @connection.chdir(path)
     end
     
     def disconnect
@@ -105,11 +138,20 @@ module Gift
     protected
     
     def upload_file(filename)
-      
+      #this will also have to create any missing dirs (unless they're handled the same as files)
+      connect
+      if File.binary?(filename)
+        @connection.putbinaryfile(filename)
+      else 
+        @connection.puttextfile(filename)
+      end
+      disconnect
     end
     
     def delete_remote_file(filename)
-      
+      connect
+      @connection.delete(filename)
+      disconnect
     end
   end
 end

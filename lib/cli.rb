@@ -84,7 +84,8 @@ module Gift
       uri = URI.parse(@options.server_address)
       recipient = Gift::Recipient.new
       
-      recipient.id = @options.server_name
+      #recipient.id = @options.server_name
+      recipient.id = "ftp-1"
       recipient.username = uri.userinfo.split(":")[0]
       recipient.password = uri.userinfo.split(":")[1]
       recipient.host = uri.host
@@ -95,7 +96,7 @@ module Gift
         puts "Connected to #{recipient.host}" if recipient.valid_connection?
         
         puts "Initialising remote files in #{recipient.host}/#{recipient.path}"
-        #recipient.setup_remote_dirs
+        recipient.setup_remote_dirs
         puts "Remote setup complete"
         
         puts "Initialising local files"
