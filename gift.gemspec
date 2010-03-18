@@ -5,23 +5,27 @@
 
 Gem::Specification.new do |s|
   s.name = %q{gift}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicholas Bruning"]
-  s.date = %q{2010-03-12}
+  s.date = %q{2010-03-18}
+  s.default_executable = %q{gift}
   s.description = %q{Gift provides a simple interface for pushing your site to a server that does not support git, via FTP.}
   s.email = %q{nicholas@bruning.com.au}
+  s.executables = ["gift"]
   s.extra_rdoc_files = [
     "README.textile"
   ]
   s.files = [
-    ".gitignore",
+    ".gift/recipients.yml",
+     ".gitignore",
      "README.textile",
      "Rakefile",
      "VERSION",
      "gift.gemspec",
-     "pkg/gift-0.0.0.gem"
+     "lib/cli.rb",
+     "lib/recipient.rb"
   ]
   s.homepage = %q{http://github.com/thetron/gift}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -34,9 +38,15 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<ptools>, [">= 0"])
+      s.add_runtime_dependency(%q<git>, [">= 0"])
     else
+      s.add_dependency(%q<ptools>, [">= 0"])
+      s.add_dependency(%q<git>, [">= 0"])
     end
   else
+    s.add_dependency(%q<ptools>, [">= 0"])
+    s.add_dependency(%q<git>, [">= 0"])
   end
 end
 
