@@ -10,10 +10,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Nicholas Bruning"]
   s.date = %q{2010-03-18}
-  s.default_executable = %q{gift}
   s.description = %q{Gift provides a simple interface for pushing your site to a server that does not support git, via FTP.}
   s.email = %q{nicholas@bruning.com.au}
-  s.executables = ["gift"]
   s.extra_rdoc_files = [
     "README.textile"
   ]
