@@ -23,3 +23,9 @@ Push your commits:
 <pre>
 	gift deliver
 </pre>
+
+h2. Caveat Emptor
+
+This is still very, very early days for Gift. One could state that it "works", but that may imply that it is "finished"; we're almost there though.
+
+Just be aware that if you decide to try Gift, it may not behave as you expect (or at all).

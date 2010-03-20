@@ -45,32 +45,36 @@ module Gift
       repo = Git.open('./')
       
       remote_commit = last_remote_commit
-      remote_commit = repo.log.to_a.last.sha if remote_commit == ""
+      
+      if(remote_commit == "")
+        remote_commit = repo.log.to_a.last.sha
+        puts "Pushing files from initial tree"
+        #push blobs on first commit
+        repo.log.to_a.last.gtree.blobs.each do |blob|
+           upload_file(blob.first) if File.exists?(blob.first)
+        end
+      end
             
       file_count = 0  
       
       puts("Last remote commit: #{remote_commit} | Current local commit: #{repo.log.to_a.first.sha}")
       
-      connect
       repo.diff(remote_commit, repo.log.to_a.first.sha).each do |file|
         unless(file.path.split('/').first == ".gift")
           if file.type == "deleted"
             begin
-              size = @connection.size(file.path)
-              puts "Deleting #{file.path} [          ] 0%"
+              #size = @connection.size(file.path)
               delete_remote_file(file.path)
             rescue Exception => e
               puts "Delete skipped #{file.path} (file not found)"
             end
           else
-            puts "Uploading #{file.path} [          ] 0%"
             upload_file(file.path)
           end
         end
         file_count += 1
       end
-      disconnect
-      
+            
       if file_count == 0
         puts "Everything up to date!"
       else
@@ -82,10 +86,12 @@ module Gift
       sha = ""
       connect
       @connection.chdir('.gift/deliveries')
+      last_delivery_report = @connection.nlst.last
       if @connection.nlst.length > 2
-        @connection.gettextfile(@connection.nlst.last) do |f|
+        @connection.gettextfile(last_delivery_report) do |f|
           sha = f
         end
+        File.delete(last_delivery_report)
       end
       disconnect
       
@@ -139,6 +145,7 @@ module Gift
     
     def upload_file(filename)
       #this will also have to create any missing dirs (unless they're handled the same as files)
+      puts "Uploading #{filename}"
       connect
       if File.binary?(filename)
         @connection.putbinaryfile(filename)
@@ -149,6 +156,7 @@ module Gift
     end
     
     def delete_remote_file(filename)
+      puts "Deleting #{filename}"
       connect
       @connection.delete(filename)
       disconnect
