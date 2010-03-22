@@ -7,6 +7,15 @@ module Gift
   class Recipient
     attr_accessor :id, :username, :password, :host, :port, :path
     
+    
+    def create
+
+    end
+
+    def load(id)
+      #find connction by identifier from .gift
+    end
+    
     def valid_connection?
       begin
         connect

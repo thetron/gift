@@ -37,4 +37,4 @@
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'cli'
-exit Gift::Cli.new(ARGV, STDIN).run
+exit Gift::CLI.new(ARGV, STDIN).run

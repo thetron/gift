@@ -9,7 +9,7 @@ require 'yaml'
 require 'recipient'
 
 module Gift
-  class Cli
+  class CLI
     
     attr_reader :options
     
@@ -43,6 +43,7 @@ module Gift
     protected
     
     def wrap
+      #connection.create
       puts "Gift wrapping #{@server_address}"
       
       #check a local git repository exists
