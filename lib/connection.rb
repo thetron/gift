@@ -5,9 +5,10 @@ require 'progress_bar'
 module Gift
   class Connection
     attr_accessor :username, :password, :host, :port, :path, :verbose
+    connection_methods = { :modified => :upload, :renamned => :rename, :new => :upload, :deleted => :delete }
     
     # constructor, creates ftp object
-    def init(host, path, username = "", password = "", port = 21, verbose = true)
+    def initialize(host, path, username = "", password = "", port = 21, verbose = true)
       self.username = username
       self.password = password
       self.host = host
@@ -41,8 +42,10 @@ module Gift
     end
     
     # uploads a file to remote server
-    def upload(file)  
-      if File.binary?(filename)
+    def upload(file)
+      create_directories(file.a_dir)
+      
+      if file.binary?(filename)
         @connection.putbinaryfile(filename)
       else 
         @connection.puttextfile(filename)
@@ -60,5 +63,13 @@ module Gift
       self.rename(old_file, new_file)
     end
     
+    # checks if directory exists on remote and (recursively) creates as necessary
+    def create_directories(dirs)
+      
+    end
+    
+    def self.file_method(action)
+      connection_methods[action]
+    end
   end
 end

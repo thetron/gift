@@ -132,15 +132,7 @@ module Gift
       fp.close
     end
     
-    def connect
-      @connection = Net::FTP.new(host, username, password)
-      @connection.chdir(path)
-    end
-    
-    def disconnect
-      @connection.close
-    end
-    
+    protected
     def self.find_by_id(id)
       #search recipients.yml for id
       YAML::load_file('.gift/recipients.yml')
@@ -148,27 +140,6 @@ module Gift
     
     def self.all
       YAML::load_file('.gift/recipients.yml')
-    end
-    
-    protected
-    
-    def upload_file(filename)
-      #this will also have to create any missing dirs (unless they're handled the same as files)
-      puts "Uploading #{filename}"
-      connect
-      if File.binary?(filename)
-        @connection.putbinaryfile(filename)
-      else 
-        @connection.puttextfile(filename)
-      end
-      disconnect
-    end
-    
-    def delete_remote_file(filename)
-      puts "Deleting #{filename}"
-      connect
-      @connection.delete(filename)
-      disconnect
     end
   end
 end
