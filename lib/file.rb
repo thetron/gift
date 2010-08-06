@@ -1,3 +1,5 @@
+require 'ptools'
+
 module Gift
   class File
     attr_accessor :path, :action
@@ -5,6 +7,10 @@ module Gift
     def initialize(path, action)
       self.path = path
       self.action = action
+    end
+    
+    def filename
+      self.split('/').last
     end
     
     #return dir as string

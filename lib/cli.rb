@@ -1,4 +1,3 @@
-
 require 'optparse' 
 require 'rdoc/usage'
 require 'ostruct'
