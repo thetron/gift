@@ -8,7 +8,8 @@ module Gift
   class Recipient
     attr_accessor :id, :username, :password, :host, :port, :path
     
-    def initialize(host, path = "/", username = "", password = "", port = 21)
+    def initialize(id, host, path = "/", username = "", password = "", port = 21)
+      self.id = id
       self.host = host
       self.username = username
       self.password = password
@@ -16,6 +17,7 @@ module Gift
       self.port = port
       
       @connection = Connection.new(self.host, self.path, self.username, self.password, self.port, true)
+      puts @ftp
     end
 
     # opens recipients file and loads specified server
@@ -46,10 +48,8 @@ module Gift
       File.makedirs File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, self.id)
     end
     
-    # dump object to YAML file
+    # FIXME: should only dump the core settings and not the whole object
     def save
-      self.id = "ftp-default" unless self.id
-      
       yaml = YAML::dump(self)
       fp = open('.gift/recipients.yml', 'w')
       fp.write(yaml)
@@ -61,6 +61,16 @@ module Gift
       @connection && @connection.valid?
     end
     
+    # FIXME: Does not do ID lookup
+    # FIXME: Should instantiate a NEW recipient opject from loaded settings
+    def self.find_by_id(id)
+      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME))
+    end
+    
+    def self.all
+      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME)).to_a
+    end
+    
     protected
     def save_state(sha)
       file_name = File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, id, Time.now.to_id.to_s)
@@ -68,15 +78,6 @@ module Gift
       fp.puts sha
       fp.close
       @connection.upload(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, file_name))
-    end
-    
-    def self.find_by_id(id)
-      #incomplete
-      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME))
-    end
-    
-    def self.all
-      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME)).to_a
     end
   end
 end

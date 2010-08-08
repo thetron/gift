@@ -49,7 +49,7 @@ module Gift
       puts "Gift wrapping #{@server_address}"
             
       uri = URI.parse(@options.server_address)
-      recipient = Gift::Recipient.new(uri.host, uri.path, uri.userinfo.split(":")[0], uri.userinfo.split(":")[1], uri.port)
+      recipient = Gift::Recipient.new("ftp-default", uri.host, uri.path, uri.userinfo.split(":")[0], uri.userinfo.split(":")[1], uri.port)
       
       begin
         puts "Connected to #{recipient.host}" if recipient.valid_connection?

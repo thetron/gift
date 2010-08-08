@@ -66,7 +66,7 @@ module Gift
       dirs = dirs.to_a unless dirs.instance_of? Array
       dirs.each do |dir|
         dir_names = dir.split "/"
-        @ftp.chdir("/")
+        @ftp.chdirs self.path
         while current_dir = dir_names.shift
           @ftp.mkdir current_dir unless @ftp.nlst.include? current_dir
           @ftp.chdir(current_dir)
@@ -82,7 +82,7 @@ module Gift
     # returns the last SHA hash of the last uploaded commit
     def last_commit
       sha = ""
-      @ftp.chdir(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR))
+      @ftp.chdir(File.join(self.path, Gift::GIFT_DIR, Gift::DELIVERIES_DIR))
       last_delivery_report = @ftp.nlst.last
       if @ftp.nlst.length > 2
         @ftp.gettextfile(last_delivery_report) do |f|
