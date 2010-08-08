@@ -1,7 +1,7 @@
 require 'ptools'
 
 module Gift
-  class File
+  class GitFile
     attr_accessor :path, :action
     
     def initialize(path, action)

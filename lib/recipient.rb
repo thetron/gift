@@ -4,6 +4,7 @@ require 'git'
 require 'repository'
 require 'constants'
 require 'connection'
+require 'git_file'
 
 module Gift
   class Recipient
@@ -29,7 +30,7 @@ module Gift
     # checks the last commit on the remote server and updates the tree accordingly
     def update_remote
       last_commit = @connection.last_commit
-      files = Repository.new.diff(last_commit)
+      files = Repository.diff(last_commit)
       files.each do |file|
         puts "#{file.action} - #{file.path}"
         #@connection.call file.action, file.path #or whatever the syntax might be
@@ -82,7 +83,7 @@ module Gift
     
     protected
     def save_state(sha)
-      file_name = File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, id, Time.now.to_id.to_s)
+      file_name = File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, id, Time.now.to_i.to_s)
       fp = File.open(file_name, "w")
       fp.puts sha
       fp.close
