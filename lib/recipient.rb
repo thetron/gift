@@ -1,6 +1,7 @@
 require 'ftools'
 require 'yaml'
 require 'git'
+require 'repository'
 require 'constants'
 require 'connection'
 
@@ -28,8 +29,9 @@ module Gift
     # checks the last commit on the remote server and updates the tree accordingly
     def update_remote
       last_commit = @connection.last_commit
-      files = @repo.diff(last_commit)
+      files = Repository.new.diff(last_commit)
       files.each do |file|
+        puts "#{file.action} - #{file.path}"
         #@connection.call file.action, file.path #or whatever the syntax might be
       end
       puts "Everything up to date!" if files.length == 0
@@ -50,8 +52,10 @@ module Gift
     
     # FIXME: should only dump the core settings and not the whole object
     def save
-      yaml = YAML::dump(self)
-      fp = open('.gift/recipients.yml', 'w')
+      recipients = Recipient.all
+      recipients[self.id] = {:host => self.host, :username => self.username, :password => self.password, :path => self.path, :port => self.port}
+      yaml = YAML::dump(recipients)
+      fp = open((File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME)), 'w')
       fp.write(yaml)
       fp.close
     end
@@ -64,11 +68,16 @@ module Gift
     # FIXME: Does not do ID lookup
     # FIXME: Should instantiate a NEW recipient opject from loaded settings
     def self.find_by_id(id)
-      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME))
+      options = Recipient.all[id]
+      Recipient.new(id, options[:host], options[:path], options[:username], options[:password], options[:port])
     end
     
     def self.all
-      YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME)).to_a
+      if File.exists?(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME))
+        return YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME))
+      else
+        return Hash.new
+      end
     end
     
     protected

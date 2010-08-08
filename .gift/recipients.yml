@@ -1,35 +1,7 @@
---- !ruby/object:Gift::Recipient 
-connection: !ruby/object:Gift::Connection 
-  ftp: !ruby/object:Net::FTP 
-    binary: true
-    debug_mode: false
-    last_response: |
-      250 OK. Current directory is /.gift/deliveries
-
-    last_response_code: "250"
-    mon_count: 0
-    mon_entering_queue: []
-
-    mon_owner: 
-    mon_waiting_queue: []
-
-    passive: true
-    resume: true
-    sock: !ruby/object:TCPSocket {}
-
-    welcome: |
-      230-User test has group access to:  involved  
-      230-OK. Current restricted directory is /
-      230 0 Kbytes used (0%) - authorized: 1024 Kb
-
-  host: involved.com.au
-  password: test
-  path: ""
-  username: test
-  verbose: true
-host: involved.com.au
-id: ftp-default
-password: test
-path: ""
-port: 21
-username: test
+--- 
+ftp-default: 
+  :path: ""
+  :username: test
+  :password: test
+  :host: involved.com.au
+  :port: 21

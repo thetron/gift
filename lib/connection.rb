@@ -66,7 +66,7 @@ module Gift
       dirs = dirs.to_a unless dirs.instance_of? Array
       dirs.each do |dir|
         dir_names = dir.split "/"
-        @ftp.chdirs self.path
+        @ftp.chdir self.path
         while current_dir = dir_names.shift
           @ftp.mkdir current_dir unless @ftp.nlst.include? current_dir
           @ftp.chdir(current_dir)

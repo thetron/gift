@@ -46,7 +46,7 @@ module Gift
       @errors = fail(["No local git repository found"]) unless File.exists?(".git")
       
       #connection.create
-      puts "Gift wrapping #{@server_address}"
+      puts "Gift wrapping #{@options.server_address}"
             
       uri = URI.parse(@options.server_address)
       recipient = Gift::Recipient.new("ftp-default", uri.host, uri.path, uri.userinfo.split(":")[0], uri.userinfo.split(":")[1], uri.port)
@@ -76,7 +76,7 @@ module Gift
     end
         
     def deliver
-      recipient = Recipient.find_by_id(nil)
+      recipient = Recipient.find_by_id('ftp-default')
       puts "Delivering gift to '#{recipient.id}'"
       recipient.update_remote
     end
