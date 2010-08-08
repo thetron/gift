@@ -22,22 +22,6 @@ module Gift
       @ftp.chdir(self.path)
     end
     
-    # creates remote .gift folders
-    def setup
-      pbar = ProgressBar.new("setup recipient", 4) if self.verbose
-      
-      @ftp.mkdir(Gift::GIFT_DIR) unless @ftp.nlst.include?(Gift::GIFT_DIR)
-      pbar.inc if self.verbose
-      
-      @ftp.chdir('.gift')
-      pbar.inc
-      
-      @ftp.mkdir('deliveries') unless @ftp.nlst.include?('deliveries') 
-      pbar.inc 
-      
-      pbar.finish if self.verbose
-    end
-    
     #check for remote folders
     def valid?
       #return @ftp.can_connect? Rescue Excepttion => e
@@ -79,11 +63,14 @@ module Gift
     
     # checks if directory exists on remote and creates as necessary
     def create_directories(dirs)
-      dir_names = dirs.split "/"
-      @ftp.chdir("/")
-      while current_dir = dir_names.shift
-        @ftp.mkdir current_dir unless @ftp.nlst.include? current_dir
-        @ftp.chdir(current_dir)
+      dirs = dirs.to_a unless dirs.instance_of? Array
+      dirs.each do |dir|
+        dir_names = dir.split "/"
+        @ftp.chdir("/")
+        while current_dir = dir_names.shift
+          @ftp.mkdir current_dir unless @ftp.nlst.include? current_dir
+          @ftp.chdir(current_dir)
+        end
       end
     end
     

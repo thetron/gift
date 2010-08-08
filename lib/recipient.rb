@@ -39,6 +39,13 @@ module Gift
       @connection.create_directories([Gift::GIFT_DIR, File.join(Gift::GIFT_DIR, DELIVERIES_DIR)])
     end
     
+    # Sets up local gift directories
+    def setup_local_dirs
+      File.makedirs Gift::GIFT_DIR unless File.exists?(Gift::GIFT_DIR)
+      File.makedirs File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR) unless File.exists?(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR))
+      File.makedirs File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, self.id)
+    end
+    
     # dump object to YAML file
     def save
       self.id = "ftp-default" unless self.id
@@ -70,12 +77,6 @@ module Gift
     
     def self.all
       YAML::load_file(File.join(Gift::GIFT_DIR, Gift::RECIPIENTS_FILENAME)).to_a
-    end
-    
-    def setup_gift_dirs
-      File.makedirs Gift::GIFT_DIR unless File.exists?(Gift::GIFT_DIR)
-      File.makedirs File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR) unless File.exists?(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR))
-      File.makedirs File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, self.id)
     end
   end
 end
