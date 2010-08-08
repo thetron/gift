@@ -1,6 +1,6 @@
 require 'net/ftp'
 require 'ptools'
-require 'progress_bar'
+require 'progressbar'
 require 'constants'
 
 module Gift
@@ -20,9 +20,6 @@ module Gift
       @ftp.passive = true
       @ftp.resume = true
       @ftp.chdir(self.path)
-      
-      #check and setup by default?
-      self.setup unless valid?
     end
     
     # creates remote .gift folders
@@ -80,15 +77,22 @@ module Gift
       self.rename(old_file, new_file)
     end
     
-    # checks if directory exists on remote and (recursively) creates as necessary
+    # checks if directory exists on remote and creates as necessary
     def create_directories(dirs)
-      
+      dir_names = dirs.split "/"
+      @ftp.chdir("/")
+      while current_dir = dir_names.shift
+        @ftp.mkdir current_dir unless @ftp.nlst.include? current_dir
+        @ftp.chdir(current_dir)
+      end
     end
     
+    # maps git action to ftp connection method
     def self.file_method(action)
       connection_methods[action]
     end
     
+    # returns the last SHA hash of the last uploaded commit
     def last_commit
       sha = ""
       @ftp.chdir(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR))

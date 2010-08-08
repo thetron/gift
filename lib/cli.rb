@@ -42,22 +42,14 @@ module Gift
     protected
     
     def wrap
-      #connection.create
-      puts "Gift wrapping #{@server_address}"
-      
       #check a local git repository exists
       @errors = fail(["No local git repository found"]) unless File.exists?(".git")
       
+      #connection.create
+      puts "Gift wrapping #{@server_address}"
+            
       uri = URI.parse(@options.server_address)
-      recipient = Gift::Recipient.new
-      
-      #recipient.id = @options.server_name
-      recipient.id = "ftp-1"
-      recipient.username = uri.userinfo.split(":")[0]
-      recipient.password = uri.userinfo.split(":")[1]
-      recipient.host = uri.host
-      recipient.port = uri.port
-      recipient.path = uri.path    
+      recipient = Gift::Recipient.new(uri.host, uri.path, uri.userinfo.split(":")[0], uri.userinfo.split(":")[1], uri.port)
       
       begin
         puts "Connected to #{recipient.host}" if recipient.valid_connection?

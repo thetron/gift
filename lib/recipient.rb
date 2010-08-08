@@ -1,38 +1,57 @@
 require 'ftools'
 require 'yaml'
 require 'git'
+require 'constants'
+require 'connection'
 
 module Gift
   class Recipient
     attr_accessor :id, :username, :password, :host, :port, :path
     
-    def create
-
+    def initialize(host, path = "/", username = "", password = "", port = 21)
+      self.host = host
+      self.username = username
+      self.password = password
+      self.path = path
+      self.port = port
+      
+      @connection = Connection.new(self.host, self.path, self.username, self.password, self.port, true)
     end
 
+    # opens recipients file and loads specified server
     def load(id)
       #find connction by identifier from .gift
     end
     
+    # checks the last commit on the remote server and updates the tree accordingly
     def update_remote
       last_commit = @connection.last_commit
       files = @repo.diff(last_commit)
       files.each do |file|
-        #@connection.call file.method, file.path #or whatever the syntax might be
+        #@connection.call file.action, file.path #or whatever the syntax might be
       end
       puts "Everything up to date!" if files.length == 0
       self.save_state(last_commit)
     end
     
+    # Sets up gift directories on remote server
+    def setup_remote_dirs
+      @connection.create_directories([Gift::GIFT_DIR, File.join(Gift::GIFT_DIR, DELIVERIES_DIR)])
+    end
+    
+    # dump object to YAML file
     def save
-      unless self.id
-        self.id = "ftp-1"
-      end
+      self.id = "ftp-default" unless self.id
       
       yaml = YAML::dump(self)
       fp = open('.gift/recipients.yml', 'w')
       fp.write(yaml)
       fp.close
+    end
+    
+    # checks if a connection exists and is valid
+    def valid_connection?
+      @connection && @connection.valid?
     end
     
     protected
