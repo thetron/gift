@@ -1,7 +1,0 @@
---- 
-ftp-default: 
-  :path: ""
-  :username: test
-  :password: test
-  :host: involved.com.au
-  :port: 21

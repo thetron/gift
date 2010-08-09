@@ -18,3 +18,7 @@ test/version_tmp
 tmp
 
 TODO
+
+# gift config folders
+.gift
+.gift/*

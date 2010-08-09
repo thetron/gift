@@ -5,6 +5,8 @@ module Gift
   class Repository
     #returns an array of Gift::File objects
     #this may only need the last_commit sha?
+    
+    # consider just grabbing the file heirachy using File (instead of Git!)
     def self.diff(sha)
       repo = Git.open "."
       files = Hash.new
