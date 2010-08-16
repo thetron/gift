@@ -1,12 +1,11 @@
 require 'net/ftp'
 require 'ptools'
-require 'progressbar'
 require 'constants'
 
 module Gift
   class Connection
     attr_accessor :username, :password, :host, :port, :path, :verbose
-    connection_methods = { :modified => :upload, :renamned => :rename, :new => :upload, :deleted => :delete }
+    @@connection_methods = { :modified => :upload, :renamned => :rename, :new => :upload, :deleted => :delete }
     
     # constructor, creates ftp object
     def initialize(host, path, username = "", password = "", port = 21, verbose = true)
@@ -14,12 +13,17 @@ module Gift
       self.password = password
       self.host = host
       self.path = path
-      self.verbose = verbose
+      self.verbose = false
       
       @ftp = Net::FTP.new(self.host, self.username, self.password)
       @ftp.passive = true
-      @ftp.resume = true
+      #@ftp.resume = true
       @ftp.chdir(self.path)
+    end
+    
+    # closes the connection
+    def close
+      @ftp.close
     end
     
     #check for remote folders
@@ -29,25 +33,29 @@ module Gift
     end
     
     # deletes remote file from server
-    def delete(file)
-      pbar = ProgressBar.new("Deleting #{file.filename}", 1) if self.verbose
+    def delete(file, message = nil)
+      message = "FTP Deleting #{file.filename}" if message == nil
+      puts message if self.verbose
+      
       @ftp.delete(file)
-      pbar.finish
+      
+      puts "DONE" if self.verbose
     end
     
     # uploads a file to remote server
-    def upload(file)
-      pbar = ProgressBar.new("Uploading #{file.filename}", 1) if self.verbose
+    def upload(file, message = nil)
+      message = "FTP Uploading #{file.filename}" if message == nil
+      puts message if self.verbose
       
-      create_directories(file.a_dir)
+      create_directories(file.a_dir.join("/"))
       
-      if file.binary?(filename)
-        @connection.putbinaryfile(filename)
+      if file.binary?
+        @ftp.putbinaryfile(file.path)
       else 
-        @connection.puttextfile(filename)
+        @ftp.puttextfile(file.path)
       end
       
-      pbar.finish if self.verbose
+      puts "DONE" if self.verbose
     end
     
     # delete and upload
@@ -76,15 +84,18 @@ module Gift
     
     # maps git action to ftp connection method
     def self.file_method(action)
-      connection_methods[action]
+      @@connection_methods[action]
     end
     
     # returns the last SHA hash of the last uploaded commit
-    def last_commit
+    # params
+    #   id - the id of the recipient
+    def last_commit(id)
       sha = ""
-      @ftp.chdir(File.join(self.path, Gift::GIFT_DIR, Gift::DELIVERIES_DIR))
-      last_delivery_report = @ftp.nlst.last
-      if @ftp.nlst.length > 2
+      @ftp.chdir(File.join(self.path, Gift::GIFT_DIR, Gift::DELIVERIES_DIR, id))
+      ls = @ftp.nlst
+      last_delivery_report = ls.last
+      if ls.length > 2
         @ftp.gettextfile(last_delivery_report) do |f|
           sha = f
         end

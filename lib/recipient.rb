@@ -1,6 +1,7 @@
 require 'ftools'
 require 'yaml'
 require 'git'
+require 'progressbar'
 require 'repository'
 require 'constants'
 require 'connection'
@@ -19,7 +20,6 @@ module Gift
       self.port = port
       
       @connection = Connection.new(self.host, self.path, self.username, self.password, self.port, true)
-      puts @ftp
     end
 
     # opens recipients file and loads specified server
@@ -29,14 +29,25 @@ module Gift
     
     # checks the last commit on the remote server and updates the tree accordingly
     def update_remote
-      last_commit = @connection.last_commit
+      last_commit = @connection.last_commit(self.id)
       files = Repository.diff(last_commit)
-      files.each do |file|
-        puts "#{file.action} - #{file.path}"
-        #@connection.call file.action, file.path #or whatever the syntax might be
+      
+      if files.length > 0
+        puts "#{files.length} changes since last delivery"
+        pbar = ProgressBar.new("Uploading", files.length)
+        files.each do |file|
+          @connection.send(Gift::Connection.file_method(file.last.action), file.last)
+          pbar.inc
+        end
+        pbar.finish
+      
+        last_commit = Gift::Repository.last_commit_hash unless last_commit && last_commit != ""
+        self.save_state(last_commit)
+      else
+        puts "Everything up to date!"
       end
-      puts "Everything up to date!" if files.length == 0
-      self.save_state(last_commit)
+      
+      @connection.close
     end
     
     # Sets up gift directories on remote server
@@ -83,11 +94,16 @@ module Gift
     
     protected
     def save_state(sha)
+      pbar = ProgressBar.new("Finishing", 1)
+      
       file_name = File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, id, Time.now.to_i.to_s)
       fp = File.open(file_name, "w")
       fp.puts sha
       fp.close
-      @connection.upload(File.join(Gift::GIFT_DIR, Gift::DELIVERIES_DIR, file_name))
+      file = Gift::GitFile.new(file_name, :new)
+      @connection.upload(file)
+      
+      pbar.finish
     end
   end
 end

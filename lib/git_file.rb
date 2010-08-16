@@ -10,7 +10,7 @@ module Gift
     end
     
     def filename
-      self.split('/').last
+      self.path.split('/').last
     end
     
     #return dir as string
@@ -20,7 +20,7 @@ module Gift
     
     #return dir as array
     def a_dir
-      path.split('/')[0...-1]
+      self.path.split('/')[0...-1]
     end
     
     #return true if file is binary
